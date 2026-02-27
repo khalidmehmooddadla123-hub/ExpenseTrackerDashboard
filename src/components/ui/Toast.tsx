@@ -8,9 +8,9 @@ interface ToastItemProps {
 }
 
 const icons = {
-  success: <CheckCircle size={16} className="text-emerald-500 shrink-0" />,
-  error:   <XCircle size={16} className="text-red-500 shrink-0" />,
-  info:    <Info size={16} className="text-blue-500 shrink-0" />,
+  success: <CheckCircle size={16} className="text-emerald-500 flex-shrink-0" />,
+  error:   <XCircle size={16} className="text-red-500 flex-shrink-0" />,
+  info:    <Info size={16} className="text-blue-500 flex-shrink-0" />,
 };
 
 const borders = {
@@ -23,7 +23,7 @@ export function ToastItem({ toast, onDismiss }: ToastItemProps) {
   return (
     <div
       className={cn(
-        'flex items-center gap-3 min-w-65 max-w-sm bg-[#1e293b] text-white rounded-xl px-4 py-3 border-l-4 shadow-lg',
+        'flex items-center gap-3 min-w-[260px] max-w-sm bg-[#1e293b] text-white rounded-xl px-4 py-3 border-l-4 shadow-lg',
         'animate-in slide-in-from-right-5 duration-300',
         borders[toast.type]
       )}
@@ -57,7 +57,7 @@ interface ToastContainerProps {
 export function ToastContainer({ toasts, onDismiss }: ToastContainerProps) {
   if (!toasts.length) return null;
   return (
-    <div className="fixed bottom-6 right-6 z-100 flex flex-col gap-2">
+    <div className="fixed bottom-6 right-6 z-[100] flex flex-col gap-2">
       {toasts.map((t) => (
         <ToastItem key={t.id} toast={t} onDismiss={onDismiss} />
       ))}

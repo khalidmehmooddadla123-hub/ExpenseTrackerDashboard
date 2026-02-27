@@ -5,9 +5,8 @@ import { cn } from '@/utils/helpers';
 export interface DropdownOption {
   value: string;
   label: string;
-  dot?: string; // color dot
+  dot?: string;
   icon?: ReactNode;
-  className?: string;
 }
 
 interface DropdownProps {
@@ -20,18 +19,14 @@ interface DropdownProps {
 }
 
 export function Dropdown({
-  options,
-  value,
-  onChange,
-  placeholder = 'Select…',
-  triggerClassName,
-  icon,
+  options, value, onChange, placeholder = 'Select…', triggerClassName, icon,
 }: DropdownProps) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
   const selected = options.find((o) => o.value === value);
 
+  // Close when clicking outside
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
@@ -46,31 +41,28 @@ export function Dropdown({
         type="button"
         onClick={() => setOpen((o) => !o)}
         className={cn(
-          'inline-flex items-center gap-2 px-3 py-2.5 text-sm font-medium rounded-lg border border-slate-200 bg-[#6B6659]/20 text-slate-700  transition-colors select-none min-w-35 justify-between',
+          'flex items-center gap-2 px-3 py-2.5 text-sm font-medium rounded-lg border border-slate-200 bg-[#6B6659]/20 text-slate-700 hover:bg-slate-50 transition-colors select-none justify-between',
           triggerClassName
         )}
       >
-        <span className="flex items-center gap-2 truncate">
-          {icon}
+        <span className="flex items-center gap-2 truncate min-w-0">
+          {icon && <span className="shrink-0">{icon}</span>}
           {selected ? (
             <>
               {selected.dot && (
-                <span
-                  className="w-2 h-2 rounded-full shrink-0"
-                  style={{ background: selected.dot }}
-                />
+                <span className="w-2 h-2 rounded-full shrink-0" style={{ background: selected.dot }} />
               )}
-              {selected.label}
+              <span className="truncate">{selected.label}</span>
             </>
           ) : (
-            placeholder
+            <span className="truncate">{placeholder}</span>
           )}
         </span>
-        <ChevronDown size={14} className="shrink-0 text-slate-400" />
+        <ChevronDown size={14} className="shrink-0 text-slate-400 ml-1" />
       </button>
 
       {open && (
-        <div className="absolute top-[calc(100%+4px)] left-0 z-40 min-w-45 bg-white border border-slate-200 rounded-xl shadow-lg py-1 overflow-hidden">
+        <div className="absolute top-[calc(100%+4px)] left-0 z-40 min-w-45 w-max bg-white border border-slate-200 rounded-xl shadow-lg py-1 overflow-hidden">
           {options.map((opt) => (
             <button
               key={opt.value}
@@ -84,10 +76,7 @@ export function Dropdown({
               )}
             >
               {opt.dot && (
-                <span
-                  className="w-2 h-2 rounded-full shrink-0"
-                  style={{ background: opt.dot }}
-                />
+                <span className="w-2 h-2 rounded-full shrink-0" style={{ background: opt.dot }} />
               )}
               {opt.icon}
               <span className="flex-1 truncate">{opt.label}</span>

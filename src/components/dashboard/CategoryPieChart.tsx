@@ -27,17 +27,51 @@ const CustomTooltip = ({ active, payload }: any) => {
   return null;
 };
 
-const renderCustomLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent }: any) => {
-  if (percent < 0.06) return null;
+// Renders both % inside slice AND dollar value outside
+const renderCustomLabel = ({
+  cx, cy, midAngle, innerRadius, outerRadius, percent, value,
+}: any) => {
   const RADIAN = Math.PI / 180;
-  const r = innerRadius + (outerRadius - innerRadius) * 0.55;
-  const x = cx + r * Math.cos(-midAngle * RADIAN);
-  const y = cy + r * Math.sin(-midAngle * RADIAN);
-  return (
-    <text x={x} y={y} fill="white" textAnchor="middle" dominantBaseline="central" fontSize={10} fontWeight={600}>
-      {`${(percent * 100).toFixed(0)}%`}
-    </text>
-  );
+
+  // Percent label inside the slice
+  if (percent >= 0.06) {
+    const rIn = innerRadius + (outerRadius - innerRadius) * 0.55;
+    const xIn = cx + rIn * Math.cos(-midAngle * RADIAN);
+    const yIn = cy + rIn * Math.sin(-midAngle * RADIAN);
+
+    // Dollar label outside the slice
+    const rOut = outerRadius + 18;
+    const xOut = cx + rOut * Math.cos(-midAngle * RADIAN);
+    const yOut = cy + rOut * Math.sin(-midAngle * RADIAN);
+
+    return (
+      <g>
+        {/* % inside */}
+        <text
+          x={xIn} y={yIn}
+          fill="white"
+          textAnchor="middle"
+          dominantBaseline="central"
+          fontSize={9}
+          fontWeight={700}
+        >
+          {`${(percent * 100).toFixed(0)}%`}
+        </text>
+        {/* $ value outside */}
+        <text
+          x={xOut} y={yOut}
+          fill="#475569"
+          textAnchor="middle"
+          dominantBaseline="central"
+          fontSize={9}
+          fontWeight={600}
+        >
+          {`$${Number(value).toFixed(0)}`}
+        </text>
+      </g>
+    );
+  }
+  return null;
 };
 
 export function CategoryPieChart({ data }: CategoryPieChartProps) {
@@ -48,13 +82,14 @@ export function CategoryPieChart({ data }: CategoryPieChartProps) {
         <EmptyState icon={<PieIcon size={40} />} title="No data yet" />
       ) : (
         <>
-          <ResponsiveContainer width="100%" height={160}>
-            <PieChart>
+          {/* Extra height to give room for outside labels */}
+          <ResponsiveContainer width="100%" height={175}>
+            <PieChart margin={{ top: 10, right: 20, bottom: 10, left: 20 }}>
               <Pie
                 data={data}
                 cx="50%"
                 cy="50%"
-                outerRadius={72}
+                outerRadius={65}
                 dataKey="value"
                 labelLine={false}
                 label={renderCustomLabel}
@@ -66,7 +101,7 @@ export function CategoryPieChart({ data }: CategoryPieChartProps) {
               <Tooltip content={<CustomTooltip />} />
             </PieChart>
           </ResponsiveContainer>
-          <div className="flex flex-wrap gap-x-3 gap-y-1.5 mt-3">
+          <div className="flex flex-wrap gap-x-3 gap-y-1.5 mt-2">
             {data.map((d, i) => (
               <div key={i} className="flex items-center gap-1.5 text-[11px] text-slate-500">
                 <span className="w-2 h-2 rounded-full shrink-0" style={{ background: d.color }} />

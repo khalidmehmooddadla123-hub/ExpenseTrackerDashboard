@@ -15,15 +15,14 @@ import { formatCurrency } from '@/utils/helpers';
 import type { Expense } from '@/types';
 
 const CAT_OPTIONS: DropdownOption[] = [
-  { value: '', label: 'All Categories', className:'bg-[#6B6659]/20'  },
+  { value: '', label: 'All Categories' },
   ...CATEGORIES.map((c) => ({ value: c.id, label: c.label, dot: c.color })),
 ];
 
 const TIME_OPTIONS: DropdownOption[] = [
-  
-  { value: 'all', label: 'All Time' , className:'bg-[#6B6659]/20' },
-  { value: 'current', label: 'Current Month' },
-  { value: 'previous', label: 'Previous Month' },
+  { value: 'all', label: 'All Time' },
+  { value: 'current', label: 'This Month' },
+  { value: 'previous', label: 'Last Month' },
 ];
 
 export default function ExpensesPage() {
@@ -59,46 +58,60 @@ export default function ExpensesPage() {
   if (loading) return <LoadingScreen label="Loading expenses…" />;
 
   return (
-    <div>
-      <div className="mb-6">
-        <h1 className="text-[22px] font-bold text-slate-800">All Expenses</h1>
-        <p className="text-sm text-slate-500 mt-0.5">Manage and track all your expenses</p>
+    <div className="w-full min-w-0">
+
+      {/* ── Page header ── */}
+      <div className="mb-4">
+        <h1 className="text-lg sm:text-2xl font-bold text-slate-800">All Expenses</h1>
+        <p className="text-xs sm:text-sm text-slate-500 mt-0.5">Manage and track all your expenses</p>
       </div>
 
       <Card padding="none">
-        <div className="p-4 border-b border-slate-100">
-          <div className="flex flex-wrap gap-3 items-center">
-            <div className="flex-1 min-w-45">
-              <Input
-                placeholder="Search expenses…"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                leftIcon={<Search size={15} />}
-                className='bg-[#6B6659]/20'
+        {/* ── Filter section ── */}
+        <div className="p-3 sm:p-4 border-b border-slate-100 space-y-2">
+
+          {/* Search — always full width */}
+          <Input
+            placeholder="Search expenses…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            leftIcon={<Search size={14} />}
+            className='bg-[#6B6659]/20'
+          />
+
+          {/* Two dropdowns:
+              On mobile (<sm): each takes full width, stacked vertically
+              On sm+: side by side in a row                              */}
+          <div className="flex flex-col sm:flex-row gap-2">
+            <div className="w-full sm:w-auto">
+              <Dropdown
+                options={CAT_OPTIONS}
+                value={catFilter}
+                onChange={setCatFilter}
+                icon={<Filter size={13} />}
+                triggerClassName="w-full sm:min-w-[160px]"
               />
             </div>
-            <Dropdown
-            
-              options={CAT_OPTIONS}
-              value={catFilter}
-              onChange={setCatFilter}
-              icon={<Filter size={13} />}
-              
-            />
-            <Dropdown
-              options={TIME_OPTIONS}
-              value={timeFilter}
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              onChange={(v) => setTimeFilter(v as any)}
-              icon={<Calendar size={13} />}
-            />
+            <div className="w-full sm:w-auto">
+              <Dropdown
+                options={TIME_OPTIONS}
+                value={timeFilter}
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                onChange={(v) => setTimeFilter(v as any)}
+                icon={<Calendar size={13} />}
+                triggerClassName="w-full sm:min-w-[150px]"
+              />
+            </div>
           </div>
-          <div className="flex items-center justify-between mt-3 text-sm text-slate-500">
-            <span>Showing <strong className="text-slate-700">{filtered.length}</strong> expenses</span>
+
+          {/* Summary row: count + total */}
+          <div className="flex items-center justify-between text-xs text-slate-500 pt-1">
+            <span><strong className="text-slate-700">{filtered.length}</strong> expenses</span>
             <span>Total: <strong className="text-slate-700">{formatCurrency(total)}</strong></span>
           </div>
         </div>
 
+        {/* ── Expense list (cards on mobile, table on desktop) ── */}
         <ExpenseTable
           expenses={filtered}
           onEdit={handleEdit}
@@ -106,7 +119,7 @@ export default function ExpensesPage() {
         />
       </Card>
 
-      {/* Edit Modal */}
+      {/* ── Edit modal ── */}
       <Modal
         open={editingExpense !== null}
         onClose={() => setEditingExpense(null)}

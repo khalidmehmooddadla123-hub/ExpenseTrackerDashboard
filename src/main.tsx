@@ -5,9 +5,6 @@ import './index.css'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <div className='font-sans'>
-      <App />
-    </div>
-    
+    <App />
   </React.StrictMode>
 )
