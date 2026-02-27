@@ -1,3 +1,4 @@
+
 @import 'tailwindcss';
 
 @layer base {
@@ -43,7 +44,7 @@
       display: block;
     }
     .responsive-table tr {
-      @apply bg-white rounded-xl mb-3 p-3 border border-slate-200 shadow-card;
+      @apply bg-white rounded-xl mb-3 p-3 border border-slate-200 shadow-md;
     }
     .responsive-table td {
       @apply flex justify-between items-center border-none py-1.5 text-sm;
